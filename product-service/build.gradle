@@ -36,3 +36,9 @@ configurations {
 
 	}
 }
+
+tasks.register("unpack", Copy) {
+	dependsOn bootJar
+	from(zipTree(tasks.bootJar.outputs.files.singleFile))
+	into("build/libs")
+}
