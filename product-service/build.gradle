@@ -20,10 +20,19 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+configurations {
+	configureEach {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'commons-logging', module: 'commons-logging'
+
+	}
 }
