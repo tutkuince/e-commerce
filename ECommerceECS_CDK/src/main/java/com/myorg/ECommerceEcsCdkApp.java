@@ -25,7 +25,7 @@ public class ECommerceEcsCdkApp {
                 .env(environment)
                 .tags(infraTags)
                 .build();
-        
+
         EcrStack ecrStack = new EcrStack(app, "Ecr", stackProps);
 
         VpcStack vpcStack = new VpcStack(app, "Vpc", stackProps);
