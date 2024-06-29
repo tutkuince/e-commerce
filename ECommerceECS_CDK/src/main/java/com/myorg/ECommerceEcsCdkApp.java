@@ -21,20 +21,16 @@ public class ECommerceEcsCdkApp {
         infraTags.put("cost", "ECommerceInfra");
 
 
-        EcrStack ecrStack = new EcrStack(app, "Ecr", StackProps.builder()
+        StackProps stackProps = StackProps.builder()
                 .env(environment)
                 .tags(infraTags)
-                .build());
+                .build();
+        
+        EcrStack ecrStack = new EcrStack(app, "Ecr", stackProps);
 
-        VpcStack vpcStack = new VpcStack(app, "Vpc", StackProps.builder()
-                .env(environment)
-                .tags(infraTags)
-                .build());
+        VpcStack vpcStack = new VpcStack(app, "Vpc", stackProps);
 
-        ClusterStack clusterStack = new ClusterStack(app, "Cluster", StackProps.builder()
-                .env(environment)
-                .tags(infraTags)
-                .build(),
+        ClusterStack clusterStack = new ClusterStack(app, "Cluster", stackProps,
                 new ClusterStackProps(vpcStack.getVpc()));
 
         clusterStack.addDependency(vpcStack);
