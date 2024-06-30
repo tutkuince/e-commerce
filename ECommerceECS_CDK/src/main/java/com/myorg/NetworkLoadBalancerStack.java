@@ -3,11 +3,14 @@ package com.myorg;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.apigateway.VpcLink;
+import software.amazon.awscdk.services.apigateway.VpcLinkProps;
 import software.amazon.awscdk.services.ec2.Vpc;
 import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationLoadBalancer;
 import software.amazon.awscdk.services.elasticloadbalancingv2.NetworkLoadBalancer;
 import software.amazon.awscdk.services.elasticloadbalancingv2.NetworkLoadBalancerProps;
 import software.constructs.Construct;
+
+import java.util.Collections;
 
 public class NetworkLoadBalancerStack extends Stack {
 
@@ -24,7 +27,10 @@ public class NetworkLoadBalancerStack extends Stack {
                 .vpc(networkLoadBalancerStackProps.vpc())
                 .build());
 
-        
+        this.vpcLink = new VpcLink(this, "VPCLink", VpcLinkProps.builder()
+                .targets(Collections.singletonList(this.networkLoadBalancer))
+                .build());
+
     }
 
     public VpcLink getVpcLink() {
