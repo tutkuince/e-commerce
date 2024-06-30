@@ -32,8 +32,11 @@ public class ECommerceEcsCdkApp {
 
         ClusterStack clusterStack = new ClusterStack(app, "Cluster", stackProps,
                 new ClusterStackProps(vpcStack.getVpc()));
-
         clusterStack.addDependency(vpcStack);
+
+        NetworkLoadBalancerStack networkLoadBalancerStack = new NetworkLoadBalancerStack(app, "NLB", stackProps,
+                new NetworkLoadBalancerStackProps(vpcStack.getVpc()));
+        networkLoadBalancerStack.addDependency(vpcStack);
 
         app.synth();
     }
