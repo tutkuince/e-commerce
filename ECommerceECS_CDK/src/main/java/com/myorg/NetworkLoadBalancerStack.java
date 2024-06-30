@@ -6,6 +6,7 @@ import software.amazon.awscdk.services.apigateway.VpcLink;
 import software.amazon.awscdk.services.apigateway.VpcLinkProps;
 import software.amazon.awscdk.services.ec2.Vpc;
 import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationLoadBalancer;
+import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationLoadBalancerProps;
 import software.amazon.awscdk.services.elasticloadbalancingv2.NetworkLoadBalancer;
 import software.amazon.awscdk.services.elasticloadbalancingv2.NetworkLoadBalancerProps;
 import software.constructs.Construct;
@@ -29,6 +30,12 @@ public class NetworkLoadBalancerStack extends Stack {
 
         this.vpcLink = new VpcLink(this, "VPCLink", VpcLinkProps.builder()
                 .targets(Collections.singletonList(this.networkLoadBalancer))
+                .build());
+
+        this.applicationLoadBalancer = new ApplicationLoadBalancer(this, "ALB", ApplicationLoadBalancerProps.builder()
+                .loadBalancerName("ECommerceALB")
+                .internetFacing(false)
+                .vpc(networkLoadBalancerStackProps.vpc())
                 .build());
 
     }
