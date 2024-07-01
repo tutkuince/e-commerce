@@ -3,6 +3,8 @@ package com.myorg;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.ec2.Peer;
+import software.amazon.awscdk.services.ec2.Port;
 import software.amazon.awscdk.services.ec2.Vpc;
 import software.amazon.awscdk.services.ecr.Repository;
 import software.amazon.awscdk.services.ecs.*;
@@ -16,6 +18,7 @@ import software.constructs.Construct;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ProductServiceStack extends Stack {
 
@@ -57,6 +60,16 @@ public class ProductServiceStack extends Stack {
                         .protocol(ApplicationProtocol.HTTP)
                         .loadBalancer(productServiceProps.applicationLoadBalancer())
                         .build());
+
+        FargateService fargateService = new FargateService(this, "ProductService", FargateServiceProps.builder()
+                .serviceName("ProductService")
+                .cluster(productServiceProps.cluster())
+                .taskDefinition(fargateTaskDefinition)
+                .desiredCount(2)
+                .build());
+
+        productServiceProps.repository().grantPull(Objects.requireNonNull(fargateTaskDefinition.getExecutionRole()));
+        fargateService.getConnections().getSecurityGroups().get(0).addIngressRule(Peer.anyIpv4(), Port.tcp(8080));
     }
 }
 
