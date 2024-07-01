@@ -66,6 +66,7 @@ public class ProductServiceStack extends Stack {
                 .cluster(productServiceProps.cluster())
                 .taskDefinition(fargateTaskDefinition)
                 .desiredCount(2)
+                // .assignPublicIp(true) -> .natGateways(0), we should use this property. Do not do this in production
                 .build());
 
         productServiceProps.repository().grantPull(Objects.requireNonNull(fargateTaskDefinition.getExecutionRole()));
