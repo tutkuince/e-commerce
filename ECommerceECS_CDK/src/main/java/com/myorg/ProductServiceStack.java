@@ -6,8 +6,8 @@ import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.ec2.Vpc;
 import software.amazon.awscdk.services.ecr.Repository;
 import software.amazon.awscdk.services.ecs.*;
-import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationLoadBalancer;
-import software.amazon.awscdk.services.elasticloadbalancingv2.NetworkLoadBalancer;
+import software.amazon.awscdk.services.ecs.Protocol;
+import software.amazon.awscdk.services.elasticloadbalancingv2.*;
 import software.amazon.awscdk.services.logs.LogGroup;
 import software.amazon.awscdk.services.logs.LogGroupProps;
 import software.amazon.awscdk.services.logs.RetentionDays;
@@ -50,6 +50,13 @@ public class ProductServiceStack extends Stack {
                         .build()))
                 .environment(envVariables)
                 .build());
+
+        ApplicationListener applicationListener = productServiceProps.applicationLoadBalancer()
+                .addListener("ProductServiceALBListener", ApplicationListenerProps.builder()
+                        .port(8080)
+                        .protocol(ApplicationProtocol.HTTP)
+                        .loadBalancer(productServiceProps.applicationLoadBalancer())
+                        .build());
     }
 }
 
