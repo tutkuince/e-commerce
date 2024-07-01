@@ -38,6 +38,27 @@ public class ECommerceEcsCdkApp {
                 new NetworkLoadBalancerStackProps(vpcStack.getVpc()));
         networkLoadBalancerStack.addDependency(vpcStack);
 
+        Map<String, String> productServiceTags = new HashMap<>();
+        productServiceTags.put("team", "NorthStar");
+        productServiceTags.put("cost", "ProductService");
+
+        ProductServiceStack productServiceStack = new ProductServiceStack(app, "ProductService", StackProps.builder()
+                .env(environment)
+                .tags(productServiceTags)
+                .build(),
+                new ProductServiceProps(
+                        vpcStack.getVpc(),
+                        clusterStack.getCluster(),
+                        networkLoadBalancerStack.getNetworkLoadBalancer(),
+                        networkLoadBalancerStack.getApplicationLoadBalancer(),
+                        ecrStack.getProductServiceRepository()
+                )
+        );
+        productServiceStack.addDependency(vpcStack);
+        productServiceStack.addDependency(clusterStack);
+        productServiceStack.addDependency(networkLoadBalancerStack);
+        productServiceStack.addDependency(ecrStack);
+
         app.synth();
     }
 }
