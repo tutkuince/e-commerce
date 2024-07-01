@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static software.amazon.awscdk.services.elasticloadbalancingv2.Protocol.*;
+
 public class ProductServiceStack extends Stack {
 
     public ProductServiceStack(final Construct scope, final String id, StackProps stackProps, ProductServiceProps productServiceProps) {
@@ -87,6 +89,23 @@ public class ProductServiceStack extends Stack {
                         .path("/actuator/health")
                         .port("8080")
                         .build())
+                .build());
+
+        NetworkListener networkListener = productServiceProps.networkLoadBalancer()
+                .addListener("ProductServiceNLBListener", BaseNetworkListenerProps.builder()
+                        .port(8080)
+                        .protocol(TCP)
+                        .build());
+
+        networkListener.addTargets("ProductServiceNLBTarget", AddNetworkTargetsProps.builder()
+                .port(8080)
+                .protocol(TCP)
+                .targetGroupName("productServiceNLB")
+                .targets(Collections.singletonList(fargateService.loadBalancerTarget(LoadBalancerTargetOptions.builder()
+                        .containerName("productService")
+                        .containerPort(8080)
+                        .protocol(Protocol.TCP)
+                        .build())))
                 .build());
     }
 }
