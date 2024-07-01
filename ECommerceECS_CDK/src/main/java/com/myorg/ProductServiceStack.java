@@ -1,5 +1,6 @@
 package com.myorg;
 
+import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
@@ -10,6 +11,7 @@ import software.amazon.awscdk.services.ecr.Repository;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.Protocol;
 import software.amazon.awscdk.services.elasticloadbalancingv2.*;
+import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
 import software.amazon.awscdk.services.logs.LogGroup;
 import software.amazon.awscdk.services.logs.LogGroupProps;
 import software.amazon.awscdk.services.logs.RetentionDays;
@@ -71,6 +73,21 @@ public class ProductServiceStack extends Stack {
 
         productServiceProps.repository().grantPull(Objects.requireNonNull(fargateTaskDefinition.getExecutionRole()));
         fargateService.getConnections().getSecurityGroups().get(0).addIngressRule(Peer.anyIpv4(), Port.tcp(8080));
+
+        applicationListener.addTargets("ProductServiceALBTarget", AddApplicationTargetsProps.builder()
+                .targetGroupName("productServiceALB")
+                .port(8080)
+                .protocol(ApplicationProtocol.HTTP)
+                .targets(Collections.singletonList(fargateService))
+                .deregistrationDelay(Duration.seconds(30))
+                .healthCheck(HealthCheck.builder()
+                        .enabled(true)
+                        .interval(Duration.seconds(30))
+                        .timeout(Duration.seconds(10))
+                        .path("/actuator/health")
+                        .port("8080")
+                        .build())
+                .build());
     }
 }
 
