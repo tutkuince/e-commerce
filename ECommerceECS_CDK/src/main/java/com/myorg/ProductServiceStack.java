@@ -13,6 +13,10 @@ import software.amazon.awscdk.services.logs.LogGroupProps;
 import software.amazon.awscdk.services.logs.RetentionDays;
 import software.constructs.Construct;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProductServiceStack extends Stack {
 
     public ProductServiceStack(final Construct scope, final String id, StackProps stackProps, ProductServiceProps productServiceProps) {
@@ -32,6 +36,20 @@ public class ProductServiceStack extends Stack {
                         .build()))
                 .streamPrefix("ProductService")
                 .build());
+
+        Map<String, String> envVariables = new HashMap<>();
+        envVariables.put("SERVER_PORT", "8080");
+
+        fargateTaskDefinition.addContainer("ProductServiceContainer", ContainerDefinitionOptions.builder()
+                .image(ContainerImage.fromEcrRepository(productServiceProps.repository(), "1.0.0"))
+                .containerName("productService")
+                .logging(logDriver)
+                .portMappings(Collections.singletonList(PortMapping.builder()
+                        .containerPort(8080)
+                        .protocol(Protocol.TCP)
+                        .build()))
+                .environment(envVariables)
+                .build());
     }
 }
 
@@ -41,4 +59,5 @@ record ProductServiceProps(
         NetworkLoadBalancer networkLoadBalancer,
         ApplicationLoadBalancer applicationLoadBalancer,
         Repository repository
-) {}
+) {
+}
