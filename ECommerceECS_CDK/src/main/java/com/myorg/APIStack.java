@@ -2,9 +2,7 @@ package com.myorg;
 
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.apigateway.RestApi;
-import software.amazon.awscdk.services.apigateway.RestApiProps;
-import software.amazon.awscdk.services.apigateway.VpcLink;
+import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.elasticloadbalancingv2.NetworkLoadBalancer;
 import software.constructs.Construct;
 
@@ -21,7 +19,26 @@ public class APIStack extends Stack {
                 .restApiName("ECommerceAPI")
                 .build());
 
-        
+        this.createProductResource(restApi, apiStackProps);
+
+    }
+
+    private void createProductResource(RestApi restApi, APIStackProps apiStackProps) {
+        // /products
+        Resource productResource = restApi.getRoot().addResource("products");
+        // GET: /products
+        productResource.addMethod("GET", new Integration(
+                IntegrationProps.builder()
+                        .type(IntegrationType.HTTP_PROXY)
+                        .integrationHttpMethod("GET")
+                        .uri("http://" + apiStackProps.networkLoadBalancer().getLoadBalancerDnsName() +
+                                ":8080/api/products")
+                        .options(IntegrationOptions.builder()
+                                .vpcLink(apiStackProps.vpcLink())
+                                .connectionType(ConnectionType.VPC_LINK)
+                                .build())
+                        .build()
+        ));
     }
 }
 
