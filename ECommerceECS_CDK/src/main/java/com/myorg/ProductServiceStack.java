@@ -41,13 +41,14 @@ public class ProductServiceStack extends Stack {
                 .readCapacity(1)
                 .writeCapacity(1)
                 .build());
-        
+
 
         FargateTaskDefinition fargateTaskDefinition = new FargateTaskDefinition(this, "TaskDefinition", FargateTaskDefinitionProps.builder()
                 .family("product-service")
                 .cpu(512)
                 .memoryLimitMiB(1024)
                 .build());
+        productDB.grantReadWriteData(fargateTaskDefinition.getTaskRole());
 
         AwsLogDriver logDriver = new AwsLogDriver(AwsLogDriverProps.builder()
                 .logGroup(new LogGroup(this, "LogGroup", LogGroupProps.builder()
@@ -60,6 +61,8 @@ public class ProductServiceStack extends Stack {
 
         Map<String, String> envVariables = new HashMap<>();
         envVariables.put("SERVER_PORT", "8080");
+        envVariables.put("AWS_PRODUCT_DB_NAME", productDB.getTableName());
+        envVariables.put("AWS_REGION", this.getRegion());
 
         fargateTaskDefinition.addContainer("ProductServiceContainer", ContainerDefinitionOptions.builder()
                 .image(ContainerImage.fromEcrRepository(productServiceProps.repository(), "1.0.0"))
