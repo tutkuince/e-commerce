@@ -39,6 +39,27 @@ public class APIStack extends Stack {
                                 .build())
                         .build()
         ));
+
+        // POST /products
+        productResource.addMethod("POST", new Integration(
+                IntegrationProps.builder()
+                        .type(IntegrationType.HTTP_PROXY)
+                        .integrationHttpMethod("POST")
+                        .uri("http://" + apiStackProps.networkLoadBalancer().getLoadBalancerDnsName() +
+                                ":8080/api/products")
+                        .options(IntegrationOptions.builder()
+                                .vpcLink(apiStackProps.vpcLink())
+                                .connectionType(ConnectionType.VPC_LINK)
+                                .build())
+                        .build()
+        ));
+
+
+        // GET /products/{id}
+
+        // PUT /products/{id}
+
+        // DELETE /products/{id}
     }
 }
 
