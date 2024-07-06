@@ -97,6 +97,20 @@ public class APIStack extends Stack {
                 .build());
 
         // DELETE /products/{id}
+        productIdResource.addMethod("DELETE", new Integration(
+                IntegrationProps.builder()
+                        .type(IntegrationType.HTTP_PROXY)
+                        .integrationHttpMethod("DELETE")
+                        .uri("http://" + apiStackProps.networkLoadBalancer().getLoadBalancerDnsName() +
+                                ":8080/api/products/{id}")
+                        .options(IntegrationOptions.builder()
+                                .vpcLink(apiStackProps.vpcLink())
+                                .connectionType(ConnectionType.VPC_LINK)
+                                .requestParameters(productIdIntegrationParameters)
+                                .build())
+                        .build()), MethodOptions.builder()
+                .requestParameters(productIdMethodParameters)
+                .build());
     }
 }
 
