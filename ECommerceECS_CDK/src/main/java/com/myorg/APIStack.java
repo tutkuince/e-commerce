@@ -65,6 +65,22 @@ public class APIStack extends Stack {
         productIdMethodParameters.put("method.request.path.id", true);
 
         Resource productIdResource = productResource.addResource("{id}");
+        productIdResource.addMethod("GET", new Integration(
+                IntegrationProps.builder()
+                        .type(IntegrationType.HTTP_PROXY)
+                        .integrationHttpMethod("GET")
+                        .uri("http://" + apiStackProps.networkLoadBalancer().getLoadBalancerDnsName() +
+                                ":8080/api/products/{id}")
+                        .options(IntegrationOptions.builder()
+                                .vpcLink(apiStackProps.vpcLink())
+                                .connectionType(ConnectionType.VPC_LINK)
+                                .requestParameters(productIdIntegrationParameters)
+                                .build())
+                        .build()), MethodOptions.builder()
+                .requestParameters(productIdMethodParameters)
+                .build());
+
+        // PUT /products/{id}
         productIdResource.addMethod("PUT", new Integration(
                 IntegrationProps.builder()
                         .type(IntegrationType.HTTP_PROXY)
@@ -79,8 +95,6 @@ public class APIStack extends Stack {
                         .build()), MethodOptions.builder()
                 .requestParameters(productIdMethodParameters)
                 .build());
-
-        // PUT /products/{id}
 
         // DELETE /products/{id}
     }
