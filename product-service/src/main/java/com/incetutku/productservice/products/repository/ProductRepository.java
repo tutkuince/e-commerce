@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.PagePublisher;
+
+import java.util.concurrent.CompletableFuture;
 
 @Repository
 public class ProductRepository {
@@ -21,5 +24,11 @@ public class ProductRepository {
     public PagePublisher<Product> findAll() {
         // DO NOT DO THIS PRODUCTION
         return productTable.scan();
+    }
+
+    public CompletableFuture<Product> findById(String productId) {
+        return productTable.getItem(Key.builder()
+                .partitionValue(productId)
+                .build());
     }
 }
