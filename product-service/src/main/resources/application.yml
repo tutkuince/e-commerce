@@ -3,3 +3,6 @@ server:
 
 aws:
   region: eu-central-1
+  product:
+    db:
+      name: product
