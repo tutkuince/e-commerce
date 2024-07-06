@@ -35,4 +35,10 @@ public class ProductRepository {
     public CompletableFuture<Void> save(Product product) {
         return productTable.putItem(product);
     }
+
+    public CompletableFuture<Product> deleteById(String productId) {
+        return productTable.deleteItem(Key.builder()
+                .partitionValue(productId)
+                .build());
+    }
 }
