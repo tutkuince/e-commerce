@@ -3,11 +3,9 @@ package com.incetutku.productservice.products.repository;
 import com.incetutku.productservice.products.model.Product;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.PagePublisher;
+import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -39,6 +37,18 @@ public class ProductRepository {
     public CompletableFuture<Product> deleteById(String productId) {
         return productTable.deleteItem(Key.builder()
                 .partitionValue(productId)
+                .build());
+    }
+
+    public CompletableFuture<Product> updateById(Product product, String productId) {
+        product.setId(productId);
+        return productTable.updateItem(UpdateItemEnhancedRequest.<Product>builder(
+                        Product.class
+                )
+                .item(product)
+                .conditionExpression(Expression.builder()
+                        .expression("attribute_exist(id)")
+                        .build())
                 .build());
     }
 }
