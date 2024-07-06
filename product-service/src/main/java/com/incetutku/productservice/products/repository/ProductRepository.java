@@ -31,4 +31,8 @@ public class ProductRepository {
                 .partitionValue(productId)
                 .build());
     }
+
+    public CompletableFuture<Void> save(Product product) {
+        return productTable.putItem(product);
+    }
 }
