@@ -50,4 +50,12 @@ public class ProductController {
         LOGGER.info("Product created with Id: {}", product.getId());
         return new ResponseEntity<>(new ProductDto(product), HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProductById(@PathVariable String id) {
+        LOGGER.info("Deleted product By Id: {}", id);
+        Product product = productRepository.deleteById(id).join();
+        if (Objects.isNull(product)) return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        return new ResponseEntity.ok(new ProductDto(product));
+    }
 }
