@@ -8,14 +8,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
@@ -42,5 +40,14 @@ public class ProductController {
         Product product = productRepository.findById(id).join();
         if (Objects.isNull(product)) return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
         return ResponseEntity.ok(new ProductDto(product));
+    }
+
+    @PostMapping
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
+        Product product = ProductDto.toProduct(productDto);
+        product.setId(UUID.randomUUID().toString());
+        productRepository.save(product).join();
+        LOGGER.info("Product created with Id: {}", product.getId());
+        return new ResponseEntity<>(new ProductDto(product), HttpStatus.CREATED);
     }
 }
