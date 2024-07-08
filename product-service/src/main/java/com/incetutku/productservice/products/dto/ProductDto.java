@@ -1,5 +1,6 @@
 package com.incetutku.productservice.products.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.incetutku.productservice.products.model.Product;
 
 public record ProductDto(
@@ -7,7 +8,9 @@ public record ProductDto(
         String name,
         String code,
         float price,
-        String model
+        String model,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        String url
 ) {
     public ProductDto(Product product) {
         this(
@@ -15,7 +18,8 @@ public record ProductDto(
                 product.getProductName(),
                 product.getCode(),
                 product.getPrice(),
-                product.getModel()
+                product.getModel(),
+                product.getProductUrl()
         );
     }
 
@@ -26,6 +30,7 @@ public record ProductDto(
         product.setCode(productDto.code);
         product.setPrice(productDto.price);
         product.setModel(productDto.model);
+        product.setProductUrl(productDto.url);
         return product;
     }
 }
