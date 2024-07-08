@@ -21,11 +21,11 @@ public record ProductDto(
 
     public static Product toProduct(ProductDto productDto) {
         Product product = new Product();
-        product.setId(product.getId());
-        product.setProductName(product.getProductName());
-        product.setCode(product.getCode());
-        product.setPrice(product.getPrice());
-        product.setModel(product.getModel());
+        product.setId(productDto.id);
+        product.setProductName(productDto.name);
+        product.setCode(productDto.code);
+        product.setPrice(productDto.price);
+        product.setModel(productDto.model);
         return product;
     }
 }
