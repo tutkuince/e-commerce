@@ -65,7 +65,7 @@ public class ProductServiceStack extends Stack {
         envVariables.put("AWS_REGION", this.getRegion());
 
         fargateTaskDefinition.addContainer("ProductServiceContainer", ContainerDefinitionOptions.builder()
-                .image(ContainerImage.fromEcrRepository(productServiceProps.repository(), "1.1.0"))
+                .image(ContainerImage.fromEcrRepository(productServiceProps.repository(), "1.1.1"))
                 .containerName("productService")
                 .logging(logDriver)
                 .portMappings(Collections.singletonList(PortMapping.builder()
