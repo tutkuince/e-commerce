@@ -47,7 +47,7 @@ public class ProductRepository {
                 )
                 .item(product)
                 .conditionExpression(Expression.builder()
-                        .expression("attribute_exist(id)")
+                        .expression("attribute_exists(id)")
                         .build())
                 .build());
     }
