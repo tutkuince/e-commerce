@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletionException;
 
 @RestController
 @RequestMapping("/api/products")
@@ -56,6 +57,18 @@ public class ProductController {
         LOGGER.info("Deleted product By Id: {}", id);
         Product product = productRepository.deleteById(id).join();
         if (Objects.isNull(product)) return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
-        return new ResponseEntity.ok(new ProductDto(product));
+        return ResponseEntity.ok(new ProductDto(product));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@RequestBody ProductDto productDto, @PathVariable String id) {
+        try {
+            Product updatedProduct = productRepository.updateById(ProductDto.toProduct(productDto), id).join();
+            LOGGER.info("Product updated with Id: {}", updatedProduct.getId());
+            return new ResponseEntity<>(new ProductDto(updatedProduct), HttpStatus.OK);
+        } catch (CompletionException exception) {
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        }
+
     }
 }
