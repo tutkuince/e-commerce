@@ -6,3 +6,9 @@ aws:
   product:
     db:
       name: product
+
+logging:
+  level:
+    com:
+      amazonaws:
+        xray: ERROR
