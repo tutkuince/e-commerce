@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "default": {
+    "fixed_target": 0,
+    "rate": 1
+  },
+  "rules": [
+    {
+      "fixed_target": 0,
+      "rate": 0,
+      "url_path": "/actuator/health",
+      "http_method": "GET",
+      "host": "*",
+      "description": "Load balancer health check"
+    }
+  ]
+}
