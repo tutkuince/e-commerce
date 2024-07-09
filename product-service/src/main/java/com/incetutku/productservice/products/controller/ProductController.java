@@ -1,5 +1,6 @@
 package com.incetutku.productservice.products.controller;
 
+import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.incetutku.productservice.products.dto.ProductDto;
 import com.incetutku.productservice.products.model.Product;
 import com.incetutku.productservice.products.repository.ProductRepository;
@@ -17,6 +18,7 @@ import java.util.concurrent.CompletionException;
 
 @RestController
 @RequestMapping("/api/products")
+@XRayEnabled
 public class ProductController {
     private static final Logger LOGGER = LogManager.getLogger(ProductController.class);
     private final ProductRepository productRepository;
