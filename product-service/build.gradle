@@ -21,9 +21,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
 	implementation(platform("software.amazon.awssdk:bom:2.21.15"))
 	implementation("software.amazon.awssdk:dynamodb")
 	implementation("software.amazon.awssdk:dynamodb-enhanced")
+
+	implementation("com.amazonaws:aws-xray-recorder-sdk-spring:2.14.0")
+	implementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.14.0")
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
