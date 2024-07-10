@@ -12,3 +12,4 @@ logging:
     com:
       amazonaws:
         xray: ERROR
+      root: INFO
