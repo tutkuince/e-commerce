@@ -1,9 +1,13 @@
 package com.myorg;
 
+import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.apigateway.*;
 import software.amazon.awscdk.services.elasticloadbalancingv2.NetworkLoadBalancer;
+import software.amazon.awscdk.services.logs.LogGroup;
+import software.amazon.awscdk.services.logs.LogGroupProps;
+import software.amazon.awscdk.services.logs.RetentionDays;
 import software.constructs.Construct;
 
 import java.util.HashMap;
@@ -18,8 +22,32 @@ public class APIStack extends Stack {
             APIStackProps apiStackProps) {
         super(scope, id, stackProps);
 
+        LogGroup logGroup = new LogGroup(this, "ECommerceAPILogs", LogGroupProps.builder()
+                .logGroupName("ECommerceAPI")
+                .removalPolicy(RemovalPolicy.DESTROY)
+                .retention(RetentionDays.ONE_MONTH)
+                .build());
+
         RestApi restApi = new RestApi(this, "RestAPI", RestApiProps.builder()
                 .restApiName("ECommerceAPI")
+                .cloudWatchRole(true)
+                .deployOptions(StageOptions.builder()
+                        .loggingLevel(MethodLoggingLevel.INFO)
+                        .accessLogDestination(new LogGroupLogDestination(logGroup))
+                        .accessLogFormat(AccessLogFormat.jsonWithStandardFields(
+                                JsonWithStandardFieldProps.builder()
+                                        .caller(true)
+                                        .httpMethod(true)
+                                        .ip(true)
+                                        .protocol(true)
+                                        .requestTime(true)
+                                        .resourcePath(true)
+                                        .responseLength(true)
+                                        .status(true)
+                                        .user(true)
+                                        .build())
+                        )
+                        .build())
                 .build());
 
         this.createProductResource(restApi, apiStackProps);
