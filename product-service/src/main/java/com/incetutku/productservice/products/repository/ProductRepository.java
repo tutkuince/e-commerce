@@ -1,7 +1,10 @@
 package com.incetutku.productservice.products.repository;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
+import com.incetutku.productservice.products.controller.ProductController;
 import com.incetutku.productservice.products.model.Product;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.*;
@@ -13,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 @Repository
 @XRayEnabled
 public class ProductRepository {
+    private static final Logger LOG = LogManager.getLogger(ProductRepository.class);
+
     private final DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient;
     private final DynamoDbAsyncTable<Product> productTable;
 
@@ -27,6 +32,7 @@ public class ProductRepository {
     }
 
     public CompletableFuture<Product> findById(String productId) {
+        LOG.info("ProductId: {}", productId);
         return productTable.getItem(Key.builder()
                 .partitionValue(productId)
                 .build());
