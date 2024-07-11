@@ -19,19 +19,22 @@ import java.net.URL;
 public class XRayConfig {
     private static final Logger LOG = LoggerFactory.getLogger(XRayConfig.class);
 
-    public XRayConfig() {
+    private static final String SAMPLING_RULE_JSON = "classpath:xray/xray-sampling-rules.json";
+
+    static {
+        URL ruleFile = null;
         try {
-            URL ruleFile = ResourceUtils.getURL("classpath:xray/xray-sampling-rules.json");
-
-            AWSXRayRecorder awsxRayRecorder = AWSXRayRecorderBuilder.standard()
-                    .withDefaultPlugins()
-                    .withSamplingStrategy(new CentralizedSamplingStrategy(ruleFile))
-                    .build();
-
-            AWSXRay.setGlobalRecorder(awsxRayRecorder);
-        } catch (FileNotFoundException exception) {
+            ruleFile = ResourceUtils.getURL(SAMPLING_RULE_JSON);
+        } catch (FileNotFoundException e) {
             LOG.error("XRay config file not found");
         }
+
+        AWSXRayRecorder awsxRayRecorder = AWSXRayRecorderBuilder.standard()
+                .withDefaultPlugins()
+                .withSamplingStrategy(new CentralizedSamplingStrategy(ruleFile))
+                .build();
+
+        AWSXRay.setGlobalRecorder(awsxRayRecorder);
     }
 
     @Bean

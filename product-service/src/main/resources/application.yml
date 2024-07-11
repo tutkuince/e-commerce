@@ -9,7 +9,5 @@ aws:
 
 logging:
   level:
-    com:
-      amazonaws:
-        xray: ERROR
-      root: INFO
+    com.amazonaws.xray: ERROR
+    com.root: INFO
