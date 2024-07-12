@@ -70,7 +70,7 @@ public class ProductServiceStack extends Stack {
         envVariables.put("LOGGING_LEVEL_ROOT", "INFO");
 
         fargateTaskDefinition.addContainer("ProductServiceContainer", ContainerDefinitionOptions.builder()
-                .image(ContainerImage.fromEcrRepository(productServiceProps.repository(), "1.4.0"))
+                .image(ContainerImage.fromEcrRepository(productServiceProps.repository(), "1.4.2"))
                 .containerName("productService")
                 .logging(logDriver)
                 .portMappings(Collections.singletonList(PortMapping.builder()
