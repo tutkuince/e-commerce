@@ -110,7 +110,7 @@ public class APIStack extends Stack {
         productModelProperties.put("price", JsonSchema.builder()
                 .type(JsonSchemaType.NUMBER)
                 .minimum(10.0)
-                .minimum(1000.0)
+                .maximum(1000.0)
                 .build());
 
         Model productModel = new Model(this, "ProductModel", ModelProps.builder()
