@@ -10,6 +10,7 @@ import software.amazon.awscdk.services.logs.LogGroupProps;
 import software.amazon.awscdk.services.logs.RetentionDays;
 import software.constructs.Construct;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,6 +81,48 @@ public class APIStack extends Stack {
                 .requestParameters(productMethodParameters)
                 .build());
 
+        RequestValidator productRequestValidator = new RequestValidator(
+                this,
+                "ProductRequestValidator",
+                RequestValidatorProps.builder()
+                        .restApi(restApi)
+                        .requestValidatorName("Product request validator")
+                        .validateRequestBody(true)
+                        .build()
+        );
+
+        Map<String, JsonSchema> productModelProperties = new HashMap<>();
+        productModelProperties.put("name", JsonSchema.builder()
+                .type(JsonSchemaType.STRING)
+                .minLength(5)
+                .maxLength(50)
+                .build());
+        productModelProperties.put("code", JsonSchema.builder()
+                .type(JsonSchemaType.STRING)
+                .minLength(5)
+                .maxLength(15)
+                .build());
+        productModelProperties.put("model", JsonSchema.builder()
+                .type(JsonSchemaType.STRING)
+                .minLength(5)
+                .maxLength(50)
+                .build());
+        productModelProperties.put("price", JsonSchema.builder()
+                .type(JsonSchemaType.NUMBER)
+                .minimum(10.0)
+                .minimum(1000.0)
+                .build());
+
+        Model productModel = new Model(this, "ProductModel", ModelProps.builder()
+                .modelName("ProductModel")
+                .restApi(restApi)
+                .contentType("application/json")
+                .schema(JsonSchema.builder()
+                        .type(JsonSchemaType.OBJECT)
+                        .properties(productModelProperties)
+                        .required(Arrays.asList("name", "code"))
+                        .build())
+                .build());
         // POST /products
         productResource.addMethod("POST", new Integration(
                 IntegrationProps.builder()
