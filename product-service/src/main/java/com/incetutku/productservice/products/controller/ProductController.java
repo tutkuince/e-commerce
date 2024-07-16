@@ -2,6 +2,8 @@ package com.incetutku.productservice.products.controller;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
 import com.incetutku.productservice.products.dto.ProductDto;
+import com.incetutku.productservice.products.enums.ProductError;
+import com.incetutku.productservice.products.exception.ProductException;
 import com.incetutku.productservice.products.model.Product;
 import com.incetutku.productservice.products.repository.ProductRepository;
 import org.apache.logging.log4j.LogManager;
@@ -37,10 +39,10 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable String id) {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable String id) throws ProductException {
         LOGGER.info("Get product By Id: {}", id);
         Product product = productRepository.findById(id).join();
-        if (Objects.isNull(product)) return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        if (Objects.isNull(product)) throw new ProductException(ProductError.PRODUCT_NOT_FOUND, id);
         return ResponseEntity.ok(new ProductDto(product));
     }
 
@@ -54,10 +56,10 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProductById(@PathVariable String id) {
+    public ResponseEntity<ProductDto> deleteProductById(@PathVariable String id) throws ProductException {
         LOGGER.info("Deleted product By Id: {}", id);
         Product product = productRepository.deleteById(id).join();
-        if (Objects.isNull(product)) return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        if (Objects.isNull(product)) throw new ProductException(ProductError.PRODUCT_NOT_FOUND, id);
         return ResponseEntity.ok(new ProductDto(product));
     }
 
