@@ -123,6 +123,10 @@ public class APIStack extends Stack {
                         .required(Arrays.asList("name", "code"))
                         .build())
                 .build());
+
+        Map<String, Model> productRequestModels = new HashMap<>();
+        productRequestModels.put("application/json", productModel);
+
         // POST /products
         productResource.addMethod("POST", new Integration(
                 IntegrationProps.builder()
@@ -138,6 +142,8 @@ public class APIStack extends Stack {
                         .build()
         ), MethodOptions.builder()
                 .requestParameters(productMethodParameters)
+                .requestValidator(productRequestValidator)
+                .requestModels(productRequestModels)
                 .build());
 
         // GET /products/{id}
@@ -179,6 +185,7 @@ public class APIStack extends Stack {
                                 .build())
                         .build()), MethodOptions.builder()
                 .requestParameters(productIdMethodParameters)
+                .requestValidator(productRequestValidator)
                 .build());
 
         // DELETE /products/{id}
@@ -195,6 +202,7 @@ public class APIStack extends Stack {
                                 .build())
                         .build()), MethodOptions.builder()
                 .requestParameters(productIdMethodParameters)
+                .requestModels(productRequestModels)
                 .build());
     }
 }
