@@ -1,10 +1,10 @@
 package com.incetutku.productservice.products.enums;
 
 import org.springframework.http.HttpStatus;
-import software.amazon.awssdk.services.dynamodb.endpoints.internal.Value;
 
 public enum ProductError {
-    PRODUCT_NOT_FOUND("Product not found", HttpStatus.NOT_FOUND);
+    PRODUCT_NOT_FOUND("Product not found", HttpStatus.NOT_FOUND),
+    PRODUCT_CODE_ALREADY_EXISTS("Product code already exists", HttpStatus.CONFLICT);
 
     private final String message;
     private final HttpStatus httpStatus;

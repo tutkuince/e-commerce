@@ -53,7 +53,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) throws ProductException {
         Product product = ProductDto.toProduct(productDto);
         product.setId(UUID.randomUUID().toString());
         productRepository.save(product).join();
@@ -70,7 +70,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@RequestBody ProductDto productDto, @PathVariable String id) {
+    public ResponseEntity<?> updateProduct(@RequestBody ProductDto productDto, @PathVariable String id) throws ProductException {
         try {
             Product updatedProduct = productRepository.updateById(ProductDto.toProduct(productDto), id).join();
             LOGGER.info("Product updated with Id: {}", updatedProduct.getId());

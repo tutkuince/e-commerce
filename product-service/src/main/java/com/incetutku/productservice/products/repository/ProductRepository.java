@@ -1,6 +1,8 @@
 package com.incetutku.productservice.products.repository;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
+import com.incetutku.productservice.products.enums.ProductError;
+import com.incetutku.productservice.products.exception.ProductException;
 import com.incetutku.productservice.products.model.Product;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +16,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Repository
@@ -41,7 +44,10 @@ public class ProductRepository {
                 .build());
     }
 
-    public CompletableFuture<Void> save(Product product) {
+    public CompletableFuture<Void> save(Product product) throws ProductException {
+        Product productWithSameCode = checkIfCodeExists(product.getCode()).join();
+        if (!Objects.isNull(productWithSameCode))
+            throw new ProductException(ProductError.PRODUCT_CODE_ALREADY_EXISTS, productWithSameCode.getId());
         return productTable.putItem(product);
     }
 
@@ -51,8 +57,12 @@ public class ProductRepository {
                 .build());
     }
 
-    public CompletableFuture<Product> updateById(Product product, String productId) {
+    public CompletableFuture<Product> updateById(Product product, String productId) throws ProductException {
         product.setId(productId);
+        Product productWithSameCode = checkIfCodeExists(product.getCode()).join();
+        if (!Objects.isNull(productWithSameCode) && !productWithSameCode.getId().equals(product.getId()))
+            throw new ProductException(ProductError.PRODUCT_CODE_ALREADY_EXISTS, productWithSameCode.getId());
+        
         return productTable.updateItem(UpdateItemEnhancedRequest.<Product>builder(
                         Product.class
                 )
