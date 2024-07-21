@@ -1,7 +1,6 @@
 package com.incetutku.productservice.products.repository;
 
 import com.amazonaws.xray.spring.aop.XRayEnabled;
-import com.incetutku.productservice.products.controller.ProductController;
 import com.incetutku.productservice.products.model.Product;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,8 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.PagePublisher;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Repository
@@ -58,5 +61,29 @@ public class ProductRepository {
                         .expression("attribute_exists(id)")
                         .build())
                 .build());
+    }
+
+    public CompletableFuture<Product> getByCode(String code) {
+        Product productByCode = checkIfCodeExists(code).join();
+        if (productByCode != null) {
+            return findById(productByCode.getId());
+        }
+        return CompletableFuture.supplyAsync(() -> null);
+    }
+
+    private CompletableFuture<Product> checkIfCodeExists(String code) {
+        List<Product> products = new ArrayList<>();
+        productTable.index("codeIdx").query(QueryEnhancedRequest.builder()
+                .limit(1)
+                .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                        .partitionValue(code)
+                        .build()))
+                .build()).subscribe(productPage -> {
+            products.addAll(productPage.items());
+        }).join();
+        if (!products.isEmpty()) {
+            return CompletableFuture.supplyAsync(() -> products.get(0));
+        }
+        return CompletableFuture.supplyAsync(() -> null);
     }
 }
