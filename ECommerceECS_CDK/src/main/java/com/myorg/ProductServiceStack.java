@@ -43,6 +43,17 @@ public class ProductServiceStack extends Stack {
                 .writeCapacity(1)
                 .build());
 
+        productDB.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
+                        .indexName("codeIdx")
+                        .partitionKey(Attribute.builder()
+                                .name("code")
+                                .type(AttributeType.STRING)
+                                .build())
+                        .projectionType(ProjectionType.KEYS_ONLY)
+                        .readCapacity(1)
+                        .writeCapacity(1)
+                .build());
+
 
         FargateTaskDefinition fargateTaskDefinition = new FargateTaskDefinition(this, "TaskDefinition", FargateTaskDefinitionProps.builder()
                 .family("product-service")
