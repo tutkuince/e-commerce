@@ -44,7 +44,7 @@ public class ProductServiceStack extends Stack {
                 .build());
 
         productDB.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
-                        .indexName("codeIdx")
+                        .indexName(" ")
                         .partitionKey(Attribute.builder()
                                 .name("code")
                                 .type(AttributeType.STRING)

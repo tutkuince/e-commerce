@@ -30,7 +30,13 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
+    public ResponseEntity<?> getAllProducts(@RequestParam(required = false) String code) throws ProductException {
+        if (!Objects.isNull(code)) {
+            LOGGER.info("Get product by code: {}", code);
+            Product productByCode = productRepository.getByCode(code).join();
+            if (!Objects.isNull(productByCode)) return ResponseEntity.ok(new ProductDto(productByCode));
+            else throw new ProductException(ProductError.PRODUCT_NOT_FOUND, null);
+        }
         LOGGER.info("Get all products");
         List<ProductDto> productDtos = new ArrayList<>();
         productRepository.findAll().items().subscribe(product -> productDtos.add(new ProductDto(product))).join();
